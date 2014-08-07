@@ -5,12 +5,12 @@ ansible Scripts
 # How to
 
 ```bash
-EŠî–{Œ`
+â– åŸºæœ¬å½¢
 $ ansible-playbook -i production [servername].yml --extra-vars '{ "hosts":"[servername]" }'
 
-Eƒ^ƒOw’èÀs (-t [ƒ^ƒO–¼])
+ãƒ»ã‚¿ã‚°æŒ‡å®šå®Ÿè¡Œ (-t [ã‚¿ã‚°å])
 $ ansible-playbook -i test-servers site.yml -t nc
 
-Efact•Ï”ˆê——
+ãƒ»factå¤‰æ•°ä¸€è¦§
 $ ansible -m setup localhost
 ```
