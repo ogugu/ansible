@@ -1,0 +1,96 @@
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+
+# Semisynchronous Replication
+# http://dev.mysql.com/doc/refman/5.5/en/replication-semisync.html
+# uncomment next line on MASTER
+;plugin-load=rpl_semi_sync_master=semisync_master.so
+# uncomment next line on SLAVE
+;plugin-load=rpl_semi_sync_slave=semisync_slave.so
+
+# Others options for Semisynchronous Replication
+;rpl_semi_sync_master_enabled=1
+;rpl_semi_sync_master_timeout=10
+;rpl_semi_sync_slave_enabled=1
+
+# http://dev.mysql.com/doc/refman/5.5/en/performance-schema.html
+;performance_schema
+
+
+
+log-bin=mysqld-bin
+#server-id={{ ansible_eth0.ipv4.address }}
+server-id=1
+sync_binlog = 1
+
+character-set-server=utf8
+#skip-character-set-client-handshake
+#bind-address=127.0.0.1
+
+innodb_file_format=Barracuda
+performance_schema
+
+
+slow-query-log=ON
+slow-query-log-file=/var/lib/mysql/mysql-slow.log
+long_query_time=2
+#log-queries-not-using-indexes
+log-slow-admin-statements
+
+log-error=/var/lib/mysql/mysql-error.log
+log-warnings=1
+
+thread_cache_size = 600
+thread_concurrency = 2
+innodb_thread_concurrency = 2
+default-storage-engine=INNODB
+
+query_cache_type=1
+query-cache-size=32M
+
+key_buffer_size = 256M
+max_allowed_packet = 1M
+sort_buffer_size = 2M
+read_buffer_size = 1024K
+read_rnd_buffer_size = 2M
+myisam_sort_buffer_size = 1024K
+
+max_connections = 300
+innodb_buffer_pool_size=5G
+innodb_log_file_size=256M
+innodb_log_files_in_group=2
+innodb_flush_method = O_DIRECT
+innodb_flush_log_at_trx_commit=1
+innodb_file_per_table
+innodb_additional_mem_pool_size = 20M
+net_buffer_length = 16K
+join_buffer_size = 256K
+table_open_cache = 600
+
+skip-name-resolve
+innodb_log_buffer_size = 16M
+expire_logs_days = 14
+sql-mode="STRICT_ALL_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"
+
+[mysql]
+default-character-set=utf8
+
+
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
+#[client]
+#password	= your_password
+#port		= 3306
+#socket		= /var/lib/mysql/mysql.sock
+#default-character-set=utf8
+
+#[mysqldump]
+#quick
+#max_allowed_packet = 16M
+#default-character-set=utf8

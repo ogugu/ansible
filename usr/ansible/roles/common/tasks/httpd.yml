@@ -1,0 +1,6 @@
+---
+- name: be sure httpd packages are uninstalled
+  yum: name={{item}} state=absent
+  with_items:
+    - httpd
+    - httpd-devel

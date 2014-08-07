@@ -1,0 +1,13 @@
+---
+- name: be sure common packages are installed
+  yum: name={{item}} state=installed
+  with_items:
+    - libselinux-python
+    - ntp
+    - bind-utils
+    - sysstat
+    - nc
+#  yum: name={{item}} state=absent # uninstall
+#  with_items:
+#    - nc
+  tags: common-packages

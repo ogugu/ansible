@@ -1,0 +1,20 @@
+---
+- name: be sure mysqld is installed
+  yum: name={{item}} state=installed enablerepo=epel,remi
+  with_items:
+    - mysql
+    - mysql-server
+    - mysql-devel
+  notify:
+    - restart mysqld
+  tags: mysqld
+
+- name: be sure mysqld is configured
+  template: src=my55.cnf.j2 dest=/etc/my.cnf
+  notify:
+    - restart mysqld
+  tags: mysqld
+
+- name: be sure mysqld is running and enabled
+  service: name=mysqld state=running enabled=yes
+  tags: mysqld

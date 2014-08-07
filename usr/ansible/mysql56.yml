@@ -1,0 +1,9 @@
+---
+- hosts: '{{ hosts }}'
+  sudo: yes
+  roles:
+#    - common
+    - mysql56
+#    - zabbix/agent
+  vars_files:
+    - "vars.yml"

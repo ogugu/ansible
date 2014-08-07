@@ -1,0 +1,13 @@
+UserParameter=memcached.proc,ps -U nobody |grep memcached|wc -l
+UserParameter=memcached.cpu,ps -p $(ps -U nobody |grep memcached |awk '{print $1}') -o pcpu |grep -v % |perl -p -e "s/\s+//g"
+UserParameter=memcache[*],echo -e "stats\nquit" | nc 127.0.0.1 11211 | awk '/STAT $1 /{print $$3}'
+UserParameter=http.connection[*],netstat -an |grep $1|grep ESTABLISHED|grep :80| wc -l
+UserParameter=http.proc,ps aux |grep httpd |grep -v grep |grep -v root |wc -l
+UserParameter=custom.vfs.dev.read.ops[*],cat /proc/diskstats | grep $1 | head -1 | awk '{print $$7}'
+UserParameter=custom.vfs.dev.read.ms[*],cat /proc/diskstats | grep $1 | head -1 | awk '{print $$10}'
+UserParameter=custom.vfs.dev.write.ops[*],cat /proc/diskstats | grep $1 | head -1 | awk '{print $$11}'
+UserParameter=custom.vfs.dev.write.ms[*],cat /proc/diskstats | grep $1 | head -1 | awk '{print $$14}'
+UserParameter=custom.vfs.dev.io.active[*],cat /proc/diskstats | grep $1 | head -1 | awk '{print $$15}'
+UserParameter=custom.vfs.dev.io.ms[*],cat /proc/diskstats | grep $1 | head -1 | awk '{print $$16}'
+UserParameter=custom.vfs.dev.read.sectors[*],cat /proc/diskstats | grep $1 | head -1 | awk '{print $$9}'
+UserParameter=custom.vfs.dev.write.sectors[*],cat /proc/diskstats | grep $1 | head -1 | awk '{print $$13}'

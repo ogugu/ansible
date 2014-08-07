@@ -1,0 +1,8 @@
+---
+- name: be sure mysqld packages are uninstalled
+  yum: name={{item}} state=absent
+  with_items:
+    - mysqld
+    - mysql
+    - mysql-server
+    - mysqld-devel

@@ -1,0 +1,89 @@
+#-----------------------------------------------------------
+# MySQL clients
+#-----------------------------------------------------------
+[client]
+port            = 3306
+socket          = /var/lib/mysql/mysql.sock
+
+#-----------------------------------------------------------
+# MySQL server
+#-----------------------------------------------------------
+[mysqld]
+port            = 3306
+socket          = /var/lib/mysql/mysql.sock
+character-set-server = utf8
+
+skip-name-resolve
+max_connections = 300
+binlog_cache_size = 1M
+sort_buffer_size = 8M
+join_buffer_size = 128K
+thread_cache_size = 300
+thread_concurrency = 4
+query_cache_size = 16M
+query_cache_limit = 2M
+ft_min_word_len = 4
+default_storage_engine = InnoDB
+thread_stack = 192K
+transaction_isolation = REPEATABLE-READ
+tmp_table_size = 64M
+log_output = FILE
+general_log = OFF
+
+##### Binary Log Configuration
+binlog_format = MIXED
+expire_logs_days = 7
+
+##### GTIDに必要な設定 #####
+log-bin= mysql-bin
+log-slave-update
+gtid-mode = OFF
+enforce-gtid-consistency = false
+master_info_repository = TABLE
+relay_log_info_repository = TABLE
+relay_log_recovery = ON
+#report_host=hostname
+
+sync_binlog = 1
+server-id = 1
+
+key_buffer_size = 256M
+read_buffer_size = 2M
+read_rnd_buffer_size = 16M
+
+innodb_buffer_pool_size = 4G
+
+innodb_log_buffer_size = 16M
+innodb_log_file_size = 256M
+
+innodb_flush_method = O_DIRECT
+innodb_thread_concurrency = 2
+innodb_flush_log_at_trx_commit = 1
+innodb_doublewrite = 1
+innodb_support_xa = ON
+
+innodb_read_io_threads = 2
+innodb_write_io_threads = 2
+innodb_io_capacity = 200
+
+slow-query-log=ON
+slow-query-log-file=/var/lib/mysql/mysql-slow.log
+long_query_time=2
+#log-queries-not-using-indexes
+log-slow-admin-statements
+
+table_open_cache = 600
+sql-mode="STRICT_ALL_TABLES"
+
+[mysqldump]
+quick
+max_allowed_packet = 128M
+default-character-set = utf8
+
+[mysql]
+no-auto-rehash
+default-character-set = utf8
+#safe-updates
+
+[mysqld_safe]
+open-files-limit = 8192

@@ -1,0 +1,4 @@
+---
+- name: be sure sysstat is running and enabled
+  service: name=sysstat state=running enabled=yes
+  tags: sysstat

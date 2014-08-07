@@ -1,0 +1,18 @@
+UserParameter=mysql.status[*],echo "show global status where Variable_name='$1';" | HOME=/var/lib/zabbix mysql -N -uroot -p{{ mysql_root_pw }} | awk '{print $$2}'
+
+UserParameter=mysql.size[*],echo "select sum($(case "$3" in both|"") echo "data_length+index_length";; data|index) echo "$3_length";; free) echo "data_free";; esac)) from information_schema.tables$([[ "$1" = "all" || ! "$1" ]] || echo " where table_schema='$1'")$([[ "$2" = "all" || ! "$2" ]] || echo "and table_name='$2'");" | HOME=/var/lib/zabbix mysql -N
+
+UserParameter=mysql.ping,HOME=/var/lib/zabbix mysqladmin -uzabbix -p{{ zbx_mysql_pw }} ping | grep -c alive
+UserParameter=mysql.version,mysql -V
+
+#DB connection count
+UserParameter=mysql.connection[*],netstat -an |grep $1|grep ESTABLISHED|grep :3306| wc -l
+
+#MySQL replication status check
+#UserParameter=mysql.repstatus,/usr/bin/mysql -u zabbix -p{{ zbx_mysql_pw }} -e "SHOW SLAVE STATUS\G" | egrep 'Slave_IO_Running|Slave_SQL_Running' | grep Yes | wc -l
+
+#MySQL replication latency
+#UserParameter=mysql.replatency,/usr/bin/mysql -u zabbix -p{{ zbx_mysql_pw }} -e "SHOW SLAVE STATUS\G" | grep Seconds_Behind_Master | awk '{print $2}'
+
+#Show DB max_connections
+UserParameter=mysql.max_conn,mysql -u zabbix -p{{ zbx_mysql_pw }} -e "show variables like 'max_connections'\G" | grep Value | awk '{print $2}'

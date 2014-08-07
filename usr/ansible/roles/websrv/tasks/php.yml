@@ -1,0 +1,45 @@
+---
+- name: be sure php is installed
+  yum: name={{item}} state=installed enablerepo=epel,remi
+  with_items:
+    - php
+    - php-cli
+    - php-pdo
+    - php-mysql
+    - php-common
+    - php-mbstring
+    - php-gd
+    - php-pear
+    - php-pecl-apcu
+    - php-pecl-memcache
+    - php-pecl-memcached
+  notify:
+    - restart httpd
+  tags: php
+
+- name: set timezone in php.ini
+  lineinfile: >
+    dest=/etc/php.ini
+    regexp='^;?date.timezone ='
+    line='date.timezone = Asia/Tokyo'
+    owner=root
+    group=root
+    mode=0644
+  notify: restart httpd
+  tags: php
+
+- name: configure php.ini
+  lineinfile: dest=/etc/php.ini backup=yes {{item}}
+  with_items:
+    - regexp='^;output_handler' line='output_handler = mb_output_handler' insertafter=';output_handler ='
+    - regexp='^output_buffering' line='output_buffering = Off' insertafter='output_buffering = 4096'
+    - regexp='^expose_php' line='expose_php = Off' insertafter='expose_php = On'
+    - regexp='^;mbstring.language' line='mbstring.language = Japanese' insertafter=';mbstring.language = Japanese'
+    - regexp='^;mbstring.internal_encoding' line='mbstring.internal_encoding = UTF-8' insertafter=';mbstring.internal_encoding = EUC-JP'
+    - regexp='^;mbstring.http_input' line='mbstring.http_input = pass' insertafter=';mbstring.http_input = auto'
+    - regexp='^;mbstring.http_output' line='mbstring.http_output = pass' insertafter=';mbstring.http_output = SJIS'
+    - regexp='^;mbstring.encoding_translation' line='mbstring.encoding_translation = Off' insertafter=';mbstring.encoding_translation = Off'
+    - regexp='^;mbstring.detect_order' line='mbstring.detect_order = SJIS,EUC-JP,UTF-8,JIS,ASCII' insertafter=';mbstring.detect_order = auto'
+    - regexp='^;mbstring.substitute_character' line='mbstring.substitute_character = none;' insertafter=';mbstring.substitute_character = none;'
+  notify: restart httpd
+  tags: php

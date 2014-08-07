@@ -1,0 +1,17 @@
+---
+- name: be sure memcached is installed
+  yum: pkg=memcached state=installed
+  tags: memcached
+
+- name: configure httpd_config
+  lineinfile: dest=/etc/sysconfig/memcached owner=root group=root mode=0644 backup=yes {{item}}
+  with_items:
+    - regexp='^USER' line='USER="nobody"' insertafter='USER="memcached"'
+    - regexp='^MAXCONN' line='MAXCONN="10240"' insertafter='MAXCONN="1024"'
+    - regexp='^CACHESIZE' line='CACHESIZE="512"' insertafter='CACHESIZE="64"'
+  notify: restart memcached
+  tags: memcached
+
+- name: be sure memcached is running and enabled
+  service: name=memcached state=running enabled=yes
+  tags: memcached

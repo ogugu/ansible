@@ -1,0 +1,59 @@
+---
+
+- name: be sure mysql repository is installed
+  yum: name=http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm
+  tags: mysql-repo
+
+- name: be sure mysqld is installed
+  yum: name={{item}} state=installed
+  with_items:
+    - mysql
+    - mysql-server
+    - mysql-devel
+    - mysql-utilities
+  notify:
+    - restart mysqld
+  tags: mysqld
+
+- name: be sure mysqld is configured
+  template: src=my56.cnf.j2 dest=/etc/my.cnf
+  notify:
+    - restart mysqld
+  tags: mysqld
+
+- name: be sure mysqld is running and enabled
+  service: name=mysqld state=running enabled=yes
+  tags: mysqld
+
+- name: Get initial root password
+  shell: /usr/bin/head -n 1 /root/.mysql_secret |/bin/awk '{print $(NF - 0)}'
+  register: root_pw
+
+- name: Set MySQL root password1
+#  shell: /usr/bin/mysql -u root -p{{ root_pw.stdout }} --connect-expired-password -e "SET PASSWORD FOR root@localhost=PASSWORD('{{ mysql_root_pw }}');"
+  shell: /usr/bin/mysql -u root --connect-expired-password -e "SET PASSWORD FOR root@localhost=PASSWORD('{{ mysql_root_pw }}');"
+  tags: mysql-init
+
+- name: Set MySQL root password2
+  shell: /usr/bin/mysql -u root -p{{ mysql_root_pw }} -e "SET PASSWORD FOR root@'127.0.0.1'=PASSWORD('{{ mysql_root_pw }}');"
+  tags: mysql-init
+
+- name: Delete anonumous user
+  shell: /usr/bin/mysql -u root -p{{ mysql_root_pw }} -e "DELETE FROM mysql.user WHERE User='';"
+  tags: mysql-init
+
+- name: Delete remote root login
+  shell: /usr/bin/mysql -u root -p{{ mysql_root_pw }} -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('127.0.0.1', 'localhost');"
+  tags: mysql-init
+
+#- name: Delete test DB 1
+#  shell: /usr/bin/mysql -u root -p{{ mysql_root_pw }} -e "DROP DATABASE test;"
+#  tags: mysql-init
+#
+#- name: Delete test DB 2
+#  shell: /usr/bin/mysql -u root -p{{ mysql_root_pw }} -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+#  tags: mysql-init
+
+- name: Reload Privilege
+  shell: /usr/bin/mysql -u root -p{{ mysql_root_pw }} -e "FLUSH PRIVILEGES;"
+  tags: mysql-init
